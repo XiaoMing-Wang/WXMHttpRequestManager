@@ -4,14 +4,17 @@
 //  Created by edz on 2019/4/29.
 //  Copyright © 2019年 wq. All rights reserved.
 //
+
 #define HaveMB 0
 #define ResultSet @"dataContent"
 #define ErrorCode @"errorCode"
 #define ErrorMsg @"errorMsg"
 
+#define WXMHttpManager [WXMHttpRequestManager shareManage]
 #import "WXMHttpRequestManager.h"
 #import "WXMNetworkRespose.h"
 
+NS_ASSUME_NONNULL_BEGIN
 @interface WXMHttpRequestManager (Operation)
 
 /** 属性 */
@@ -30,3 +33,4 @@
 
 
 @end
+NS_ASSUME_NONNULL_END
