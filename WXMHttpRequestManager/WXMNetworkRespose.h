@@ -9,9 +9,8 @@
 #import <AFNetworking.h>
 
 static NSString *const KURLString = @""; /** 线上 */
-//static NSString *const KURLString = @""; /** 测试 */
-//static NSString *const KURLString = @""; /** 开发 */
-
+// static NSString *const KURLString = @""; /** 测试 */
+// static NSString *const KURLString = @""; /** 开发 */
 
 @interface WXMNetworkRespose : NSObject
 @property (nonatomic, strong, readonly) NSURLSessionTask *task;
@@ -28,3 +27,4 @@ static NSString *const KURLString = @""; /** 线上 */
 @interface AFHTTPSessionManager (WXMAFNetworkingConfig)
 + (instancetype)wxmDefaultManager;
 @end
+

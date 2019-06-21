@@ -20,6 +20,7 @@
     });
     return manage;
 }
+
 + (WXMHttpRequestManager *)shareNoMB {
     static WXMHttpRequestManager *noMB = nil;
     static dispatch_once_t onceToken;
@@ -29,19 +30,23 @@
     });
     return noMB;
 }
+
 /** 设置请求头 */
 - (void)configurationNetworkHeader:(NSString *)path {
     AFHTTPSessionManager *sessionManager = [WXMHttpRequestManager shareAFHTTPSessionManager];
     [sessionManager.requestSerializer setValue:@"" forHTTPHeaderField:@""];
 }
+
 /** 参数加密 */
 - (NSDictionary *)configurationParameters:(NSDictionary *)parameters {
     return parameters;
 }
+
 /** 响应解密 */
 - (NSDictionary *)decryptionResponse:(NSDictionary *)parameters {
     return parameters;
 }
+
 /** post 直接使用 */
 - (void)requestWithPath:(NSString *)path
              parameters:(nullable NSDictionary *)parameters
@@ -52,6 +57,7 @@
     UIViewController * vc = controller;
     [self baseRequestWithPath:path parameters:par viewController:vc success:success failure:failure];
 }
+
 /** 根请求 */
 - (void)baseRequestWithPath:(NSString *)path
                  parameters:(nullable NSDictionary *)parameters

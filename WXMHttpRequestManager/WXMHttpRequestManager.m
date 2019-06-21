@@ -19,11 +19,13 @@ static AFHTTPSessionManager *_manager;
                            success:(void(^)(id responseObject))success
                            failure:(void(^)(NSError *error))failure {
     AFHTTPSessionManager *mg = [self shareAFHTTPSessionManager];
-    return [mg GET:URL parameters:parameters progress:nil success:^(NSURLSessionDataTask *task, id resp) {
+    return [mg GET:URL parameters:parameters progress:nil success:^(NSURLSessionDataTask *task,id resp){
         
         if (success) success([self JSONObjectWithData:resp]);
         
-    } failure:^(NSURLSessionDataTask *task, NSError * error) { if(failure) failure(error);}];
+    } failure:^(NSURLSessionDataTask *task, NSError * error) {
+        if (failure) failure(error);
+    }];
 }
 
 /* post */
@@ -32,12 +34,15 @@ static AFHTTPSessionManager *_manager;
                             success:(void(^)(id responseObject))success
                             failure:(void(^)(NSError *error))failure {
     AFHTTPSessionManager *mg = [self shareAFHTTPSessionManager];
-    return [mg POST:URL parameters:parameters progress:nil success:^(NSURLSessionDataTask *task, id resp) {
+    return [mg POST:URL parameters:parameters progress:nil success:^(NSURLSessionDataTask *task,id resp){
         
         if (success) success([self JSONObjectWithData:resp]);
         
-    } failure:^(NSURLSessionDataTask *task, NSError *error) { if (failure) failure(error);}];
+    } failure:^(NSURLSessionDataTask *task, NSError *error) {
+        if (failure) failure(error);
+    }];
 }
+
 /** 转换 */
 + (id)JSONObjectWithData:(id)response {
     return [NSJSONSerialization JSONObjectWithData:response
@@ -147,9 +152,11 @@ static AFHTTPSessionManager *_manager;
     }];
     [manager startMonitoring];
 }
+
 + (BOOL)currentNetworkStatus {
     return _isNetwork;
 }
+
 + (void)cancelAllOperations {
     [[self shareAFHTTPSessionManager].operationQueue cancelAllOperations];
 }
