@@ -2,26 +2,31 @@
 //  Created by wq on 16/5/31.
 //  Copyright © 2016年 wq. All rights reserved.
 //
+#define STask NSURLSessionDataTask
+#define KLibraryboxPath \
+NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES).firstObject
 
 #import "AFNetworking.h"
-#import "WXMHttpRequestManager.h"
 #import "WXMNetworkRespose.h"
+#import "WXMWrapHttpRequestManager.h"
+#import "WXMHttpConfigurationFile.h"
 
 /** 是否有网 */
 static BOOL _isNetwork;
 static AFHTTPSessionManager *_manager;
 
-@implementation WXMHttpRequestManager
+@implementation WXMBaseHttpRequestManager
 
 /* get */
 + (__kindof NSURLSessionTask *)GET:(NSString *)URL
                         parameters:(NSDictionary *)parameters
                            success:(void(^)(id responseObject))success
                            failure:(void(^)(NSError *error))failure {
-    AFHTTPSessionManager *mg = [self shareAFHTTPSessionManager];
-    return [mg GET:URL parameters:parameters progress:nil success:^(NSURLSessionDataTask *task, id resp) {
+    
+    AFHTTPSessionManager *manager = [self shareAFHTTPSessionManager];
+    return [manager GET:URL parameters:parameters progress:nil success:^(STask *task, id resp) {
         
-        if (success) success([self JSONObjectWithData:resp]);
+        if (success) success([self jsonObjectWithData:resp]);
         
     } failure:^(NSURLSessionDataTask *task, NSError * error) { if(failure) failure(error);}];
 }
@@ -31,15 +36,16 @@ static AFHTTPSessionManager *_manager;
                          parameters:(NSDictionary *)parameters
                             success:(void(^)(id responseObject))success
                             failure:(void(^)(NSError *error))failure {
-    AFHTTPSessionManager *mg = [self shareAFHTTPSessionManager];
-    return [mg POST:URL parameters:parameters progress:nil success:^(NSURLSessionDataTask *task, id resp) {
+    AFHTTPSessionManager *manager = [self shareAFHTTPSessionManager];
+    return [manager POST:URL parameters:parameters progress:nil success:^(STask *task, id resp) {
         
-        if (success) success([self JSONObjectWithData:resp]);
+        if (success) success([self jsonObjectWithData:resp]);
         
     } failure:^(NSURLSessionDataTask *task, NSError *error) { if (failure) failure(error);}];
 }
+
 /** 转换 */
-+ (id)JSONObjectWithData:(id)response {
++ (id)jsonObjectWithData:(id)response {
     return [NSJSONSerialization JSONObjectWithData:response
                                            options:NSJSONReadingMutableContainers
                                              error:nil];
@@ -57,16 +63,18 @@ static AFHTTPSessionManager *_manager;
                                      success:(void(^)(id responseObject))success
                                      failure:(void(^)(NSError *error))failure {
     
-    AFHTTPSessionManager *mg = [self shareAFHTTPSessionManager];
-    return [mg POST:URL parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData>formData) {
+    AFHTTPSessionManager *manager = [self shareAFHTTPSessionManager];
+    return [manager POST:URL parameters:parameters constructingBodyWithBlock:^(id<AFMultipartFormData>formData) {
         
+        NSString *mimeT = [NSString stringWithFormat:@"image/%@", mimeType ?: @"jpeg"];
+        NSString *mimeF = mimeType ?: @"jpeg";
         [images enumerateObjectsUsingBlock:^(UIImage *image, NSUInteger idx, BOOL *stop) {
-            
+            NSString *fileN = [NSString stringWithFormat:@"%@%ld.%@", fileName, idx,mimeF];
             NSData *imageData = UIImageJPEGRepresentation(image, 0.5);
             [formData appendPartWithFileData:imageData
                                         name:name
-                                    fileName:[NSString stringWithFormat:@"%@%lu.%@", fileName, (unsigned long) idx, mimeType ?: @"jpeg"]
-                                    mimeType:[NSString stringWithFormat:@"image/%@", mimeType ?: @"jpeg"]];
+                                    fileName:fileN
+                                    mimeType:mimeT];
         }];
     } progress:^(NSProgress *_Nonnull uploadProgress) {
         if (progress) progress(uploadProgress);
@@ -84,34 +92,36 @@ static AFHTTPSessionManager *_manager;
                                        success:(void (^)(NSString *filePath))success
                                        failure:(void (^)(NSError *error))failure {
 
-    AFHTTPSessionManager *mg = [self shareAFHTTPSessionManager];
+    AFHTTPSessionManager *manager = [self shareAFHTTPSessionManager];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:URL]];
-    NSURLSessionDownloadTask *task = [mg downloadTaskWithRequest:request progress:^(NSProgress *pro) {
-      
+    NSURLSessionDownloadTask *task = nil;
+    task = [manager downloadTaskWithRequest:request progress:^(NSProgress *pro) {
+        
         if (progress) progress(pro);
-
+        
     } destination:^NSURL *_Nonnull(NSURL *_Nonnull targetPath, NSURLResponse *_Nonnull response) {
         
-        NSString *downloadDir = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:fileDir ?: @"Download"];
-        
+        NSString *path = [KLibraryboxPath stringByAppendingPathComponent:fileDir ?: @"Download"];
         NSFileManager *fmg = [NSFileManager defaultManager];
-        [fmg createDirectoryAtPath:downloadDir withIntermediateDirectories:YES attributes:nil error:nil];
-        NSString *filePath = [downloadDir stringByAppendingPathComponent:response.suggestedFilename];
+        [fmg createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+        NSString *filePath = [path stringByAppendingPathComponent:response.suggestedFilename];
         return [NSURL fileURLWithPath:filePath];
         
-    } completionHandler:^(NSURLResponse *_Nonnull response, NSURL *_Nullable filePath, NSError *error) {
+    } completionHandler:^(NSURLResponse * response, NSURL *filePath, NSError *error) {
         if (success) success(filePath.absoluteString);
         if (failure && !error) failure(error);
     }];
+    
     [task resume];
     return task;
 }
+
 #pragma mark _________________________________________________________ 单例
 
 + (AFHTTPSessionManager *)shareAFHTTPSessionManager {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _manager = [AFHTTPSessionManager wxmDefaultManager];
+        _manager = WXMDefaultManager();
     });
     return _manager;
 }
@@ -119,6 +129,7 @@ static AFHTTPSessionManager *_manager;
 #pragma mark _________________________________________________________ 监听网络
 
 + (void)checkNetworkStatusWithBlock:(void (^)(WXMNetworkStatus status))statuBlock {
+    
     _isNetwork = NO;
     AFNetworkReachabilityManager *manager = [AFNetworkReachabilityManager sharedManager];
     [manager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
@@ -147,9 +158,11 @@ static AFHTTPSessionManager *_manager;
     }];
     [manager startMonitoring];
 }
+
 + (BOOL)currentNetworkStatus {
     return _isNetwork;
 }
+
 + (void)cancelAllOperations {
     [[self shareAFHTTPSessionManager].operationQueue cancelAllOperations];
 }

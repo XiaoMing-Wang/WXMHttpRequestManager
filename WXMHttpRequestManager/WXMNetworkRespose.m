@@ -5,41 +5,27 @@
 //  Created by edz on 2019/4/29.
 //  Copyright © 2019年 wq. All rights reserved.
 //
-
+#import "WXMHttpConfigurationFile.h"
 #import "WXMNetworkRespose.h"
 
 @implementation WXMNetworkRespose
 
-- (instancetype)initWithTask:(NSURLSessionTask *)dataTask
-                    response:(NSData *)response
-                       error:(NSError *)error {
-    if ([super init]) {
-        _task = dataTask;
-        _response= response;
-        _error = error;
-    }
-    return self;
++ (instancetype)resposeWithTask:(NSURLSessionTask *)dataTask
+                       response:(id)response
+                          error:(NSError *)error {
+    WXMNetworkRespose *respose = [WXMNetworkRespose new];
+    respose.task = dataTask;
+    respose.response= response;
+    respose.error = error;
+    return response;
+}
+
+- (void)setTask:(NSURLSessionTask *)task {
+    _task = task;
+}
+
+- (void)setSuccessfulWithDelivery:(BOOL)delivery {
+    _successful = delivery;
 }
 @end
 
-
-@implementation AFHTTPSessionManager (WXMAFNetworkingConfig)
-
-+ (instancetype)wxmDefaultManager {
-    NSURL * baseUrl = [NSURL URLWithString:KURLString];
-    NSURLSessionConfiguration *conf = [NSURLSessionConfiguration defaultSessionConfiguration];
-    AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithBaseURL:baseUrl sessionConfiguration:conf];
-    manager.operationQueue.maxConcurrentOperationCount = 10;
-    manager.requestSerializer = [AFHTTPRequestSerializer serializer];
-    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-    [manager.requestSerializer setTimeoutInterval:30];
-    manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json", @"text/json", @"text/javascript", @"text/html", @"application/x-protobuf", nil];
-    
-#if DEBUG
-    manager.securityPolicy.allowInvalidCertificates = YES;
-    manager.securityPolicy.validatesDomainName = NO;
-#endif
-    return manager;
-}
-
-@end

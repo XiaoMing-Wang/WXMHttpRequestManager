@@ -14,7 +14,7 @@ typedef NS_ENUM(NSUInteger, WXMNetworkStatus) {
     WXMNetworkStatusReachableViaWiFi  /**  WIFI网络 */
 };
 
-@interface WXMHttpRequestManager : NSObject
+@interface WXMBaseHttpRequestManager : NSObject
 
 /** 获取AFHTTPSessionManager对象 */
 + (AFHTTPSessionManager *)shareAFHTTPSessionManager;
