@@ -18,6 +18,8 @@
                        response:(id)response
                           error:(NSError *)error;
 
+/** 设置 */
 - (void)setSuccessfulWithDelivery:(BOOL)delivery;
+
 @end
 

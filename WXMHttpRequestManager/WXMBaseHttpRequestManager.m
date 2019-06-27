@@ -28,7 +28,7 @@ static AFHTTPSessionManager *_manager;
         
         if (success) success([self jsonObjectWithData:resp]);
         
-    } failure:^(NSURLSessionDataTask *task, NSError * error) { if(failure) failure(error);}];
+    } failure:^(NSURLSessionDataTask *task, NSError * error) { if (failure) failure(error);}];
 }
 
 /* post */

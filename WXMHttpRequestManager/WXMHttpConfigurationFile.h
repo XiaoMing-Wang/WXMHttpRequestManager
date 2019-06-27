@@ -28,7 +28,7 @@ static inline NSURL *WXMCurrentEnvironment(void) {
 }
 
 /** 默认Manager */
-static inline AFHTTPSessionManager *WXMDefaultManager(void) {
+static inline AFHTTPSessionManager *WXMDefaultManager() {
     NSURL * baseUrl = WXMCurrentEnvironment();
     NSURLSessionConfiguration *conf = [NSURLSessionConfiguration defaultSessionConfiguration];
     AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithBaseURL:baseUrl

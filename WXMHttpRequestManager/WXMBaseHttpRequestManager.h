@@ -35,7 +35,7 @@ typedef NS_ENUM(NSUInteger, WXMNetworkStatus) {
                            failure:(void(^)(NSError *error))failure;
 
 /**
- *  POST请求,无缓存
+ *  POST请求
  *
  *  @param URL        请求地址
  *  @param parameters 请求参数

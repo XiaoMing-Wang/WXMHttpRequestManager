@@ -60,14 +60,30 @@
 }
 
 /** 参数加密 */
-- (NSDictionary *)configurationParameters:(NSDictionary *)parameters {
+- (NSDictionary *)configurationParameters:(NSDictionary *)parameters path:(NSString *)path {
     return parameters;
 }
 
 /** 响应解密 */
-- (NSDictionary *)decryptionResponse:(NSDictionary *)parameters {
+- (NSDictionary *)decryptionResponse:(NSDictionary *)parameters path:(NSString *)path {
     return parameters;
 }
+
+/** get 直接使用 */
+- (void)pullDataWithPath:(NSString *)path
+              parameters:(nullable NSDictionary *)parameters
+          viewController:(nullable UIViewController *)controller
+                 success:(nullable void (^)(WXMNetworkRespose *resposeObj))success
+                 failure:(nullable void (^)(WXMNetworkRespose *resposeObj))failure {
+    
+    [self baseRequestWithPath:path
+                  requestType:WXMHttpRequestTypeGet
+                   parameters:parameters
+               viewController:controller
+                      success:success
+                      failure:failure];
+}
+
 
 /** post 直接使用 */
 - (void)requestWithPath:(NSString *)path
@@ -75,13 +91,18 @@
          viewController:(nullable UIViewController *)controller
                 success:(nullable void (^)(WXMNetworkRespose *resposeObj))success
                 failure:(nullable void (^)(WXMNetworkRespose *resposeObj))failure {
-    NSDictionary * par = parameters;
-    UIViewController * vc = controller;
-    [self baseRequestWithPath:path parameters:par viewController:vc success:success failure:failure];
+    
+    [self baseRequestWithPath:path
+                  requestType:WXMHttpRequestTypePost
+                   parameters:parameters
+               viewController:controller
+                      success:success
+                      failure:failure];
 }
 
 /** 根请求 */
 - (void)baseRequestWithPath:(NSString *)path
+                requestType:(WXMHttpRequestType)requestType
                  parameters:(nullable NSDictionary *)parameters
              viewController:(nullable UIViewController *)controller
                     success:(nullable void (^)(WXMNetworkRespose *resposeObj))success
@@ -94,17 +115,19 @@
     [self configurationNetworkHeader:path];
     
     /** 加密数据 */
-    NSDictionary*encryParameters =  [self configurationParameters:parameters];
+    NSDictionary*encry = [self configurationParameters:parameters requestPath:path];
     
+    
+    /** 成功回调 */
     __block NSURLSessionTask *task;
-    task = [self.class POST:path parameters:encryParameters success:^(id response) {
+    void (^successBlock)(id) = ^(id response) {
         
         NSLog(@"%@ --------> \n  %@",path,response);
         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
         if (controller) [self hidenLoadingWithController:controller];
         
         /** 解密数据 */
-        NSDictionary * decrypResponse = [self decryptionResponse:response];
+        NSDictionary * decrypResponse = [self decryptionResponse:response requestPath:path];
         BOOL successSign = [self wt_judgeRequestSuccess:decrypResponse];
         NSString *targetString = [self wt_resultSetTarget];
         NSDictionary * result = [decrypResponse objectForKey:targetString];
@@ -118,13 +141,24 @@
             if (success && fee) success(res);
         }
         
-    } failure:^(NSError *error) {
+    };
+    
+    
+    /** 失败回调 */
+    void (^failBlock)(NSError *) = ^(NSError *error) {
         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
         if (controller) [self hidenLoadingWithController:controller];
         if (controller) [self showMessage:controller massage:WXMERRORMSG];
         WXMNetworkRespose *resp = [WXMNetworkRespose resposeWithTask:task response:nil error:error];
         if (failure) failure(resp);
-    }];
+    };
+    
+    /** 不同的请求 */
+    if (requestType == WXMHttpRequestTypePost) {
+        task = [self.class POST:path parameters:encry success:successBlock failure:failBlock];
+    } else if (requestType == WXMHttpRequestTypeGet) {
+        task = [self.class GET:path parameters:encry  success:successBlock failure:failBlock];
+    }
 }
 
 /** 显示弹窗 */
