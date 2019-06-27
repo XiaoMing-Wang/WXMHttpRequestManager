@@ -4,10 +4,7 @@
 //
 //  Created by edz on 2019/6/24.
 //  Copyright © 2019 wq. All rights reserved.
-//
- /** #define WXMResultSet @"dataContent"
-#define WXMErrorCode @"errorCode"
-#define WXMErrorMsg @"errorMsg" */
+
 #import "WXMHttpRequestHeader.h"
 #import "WXMBaseHttpRequestManager.h"
 
