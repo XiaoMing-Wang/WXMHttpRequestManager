@@ -71,7 +71,7 @@ typedef NS_ENUM(NSUInteger, WXMNetworkStatus) {
                                         name:(NSString *)name
                                     fileName:(NSString *)fileName
                                     mimeType:(NSString *)mimeType
-                                    progress:(void (^)(NSProgress *progress))progress
+                                    progress:(void (^)(double progress))progress
                                      success:(void (^)(id responseObject))success
                                      failure:(void (^)(NSError *error))failure;
 
@@ -88,7 +88,7 @@ typedef NS_ENUM(NSUInteger, WXMNetworkStatus) {
  */
 + (__kindof NSURLSessionTask *)downloadWithURL:(NSString *)URL
                                        fileDir:(NSString *)fileDir
-                                      progress:(void (^)(NSProgress *progress))progress
+                                      progress:(void (^)(double progress))progress
                                        success:(void (^)(NSString *filePath))success
                                        failure:(void (^)(NSError *error))failure;
 

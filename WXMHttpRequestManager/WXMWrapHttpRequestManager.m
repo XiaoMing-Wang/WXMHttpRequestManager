@@ -5,7 +5,6 @@
 //  Created by edz on 2019/6/24.
 //  Copyright © 2019 wq. All rights reserved.
 //
-#define WXMERRORMSG @"无法连接网络，请检查网络配置"
 #import "WXMWrapHttpRequestManager.h"
 @interface WXMWrapHttpRequestManager () <WXMHttpRequestProtocol>
 @property (nonatomic, strong) NSMutableDictionary *gestureDictionary;
@@ -14,43 +13,43 @@
 @implementation WXMWrapHttpRequestManager
 
 + (WXMWrapHttpRequestManager *)shareDisplay {
-    static WXMWrapHttpRequestManager *manage = nil;
+    static WXMWrapHttpRequestManager *manageDisplay = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        manage = [[self alloc] init];
-        manage.loadingType = WXMHttpLoadingTypeDisplay;
+        manageDisplay = [[self alloc] init];
+        manageDisplay.loadingType = WXMHttpLoadingTypeDisplay;
     });
-    return manage;
+    return manageDisplay;
 }
 
 + (WXMWrapHttpRequestManager *)shareNone {
-    static WXMWrapHttpRequestManager *manage = nil;
+    static WXMWrapHttpRequestManager *manageNone = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        manage = [[self alloc] init];
-        manage.loadingType = WXMHttpLoadingTypeNone;
+        manageNone = [[self alloc] init];
+        manageNone.loadingType = WXMHttpLoadingTypeNone;
     });
-    return manage;
+    return manageNone;
 }
 
 + (WXMWrapHttpRequestManager *)shareMandatory {
-    static WXMWrapHttpRequestManager *manage = nil;
+    static WXMWrapHttpRequestManager *manageMandatory = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        manage = [[self alloc] init];
-        manage.loadingType = WXMHttpLoadingTypeMandatory;
+        manageMandatory = [[self alloc] init];
+        manageMandatory.loadingType = WXMHttpLoadingTypeMandatory;
     });
-    return manage;
+    return manageMandatory;
 }
 
 + (WXMWrapHttpRequestManager *)shareProhibit {
-    static WXMWrapHttpRequestManager *manage = nil;
+    static WXMWrapHttpRequestManager *manageProhibit = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        manage = [[self alloc] init];
-        manage.loadingType = WXMHttpLoadingTypeProhibit;
+        manageProhibit = [[self alloc] init];
+        manageProhibit.loadingType = WXMHttpLoadingTypeProhibit;
     });
-    return manage;
+    return manageProhibit;
 }
 
 /** 设置请求头 */
@@ -73,8 +72,8 @@
 - (void)pullDataWithPath:(NSString *)path
               parameters:(nullable NSDictionary *)parameters
           viewController:(nullable UIViewController *)controller
-                 success:(nullable void (^)(WXMNetworkRespose *resposeObj))success
-                 failure:(nullable void (^)(WXMNetworkRespose *resposeObj))failure {
+                 success:(nullable void (^)(WXMNetworkRespose *respose))success
+                 failure:(nullable void (^)(WXMNetworkRespose *respose))failure {
     
     [self baseRequestWithPath:path
                   requestType:WXMHttpRequestTypeGet
@@ -84,13 +83,12 @@
                       failure:failure];
 }
 
-
 /** post 直接使用 */
 - (void)requestWithPath:(NSString *)path
              parameters:(nullable NSDictionary *)parameters
          viewController:(nullable UIViewController *)controller
-                success:(nullable void (^)(WXMNetworkRespose *resposeObj))success
-                failure:(nullable void (^)(WXMNetworkRespose *resposeObj))failure {
+                success:(nullable void (^)(WXMNetworkRespose *respose))success
+                failure:(nullable void (^)(WXMNetworkRespose *respose))failure {
     
     [self baseRequestWithPath:path
                   requestType:WXMHttpRequestTypePost
@@ -105,26 +103,32 @@
                 requestType:(WXMHttpRequestType)requestType
                  parameters:(nullable NSDictionary *)parameters
              viewController:(nullable UIViewController *)controller
-                    success:(nullable void (^)(WXMNetworkRespose *resposeObj))success
-                    failure:(nullable void (^)(WXMNetworkRespose *resposeObj))failure {
+                    success:(nullable void (^)(WXMNetworkRespose *respose))success
+                    failure:(nullable void (^)(WXMNetworkRespose *respose))failure {
     
     if (!path) return;
-    if (controller) [self showLoadingWithController:controller];
+    [self showLoadingWithController:controller];
+    
+#if DEBUG
+    NSLog(@"--------------> %@", path);
+#endif
     
     /** 设置请求头 */
     [self configurationNetworkHeader:path];
     
     /** 加密数据 */
-    NSDictionary*encry = [self configurationParameters:parameters requestPath:path];
+    NSDictionary *encry = [self configurationParameters:parameters requestPath:path];
     
     
     /** 成功回调 */
-    __block NSURLSessionTask *task;
+    NSURLSessionTask *task;
     void (^successBlock)(id) = ^(id response) {
         
+#if DEBUG
         NSLog(@"%@ --------> \n  %@",path,response);
+#endif
         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-        if (controller) [self hidenLoadingWithController:controller];
+        [self hidenLoadingWithController:controller];
         
         /** 解密数据 */
         NSDictionary * decrypResponse = [self decryptionResponse:response requestPath:path];
@@ -140,18 +144,18 @@
             BOOL fee = [self wt_judgeErrorCodeWithPath:path result:result controller:controller];
             if (success && fee) success(res);
         }
-        
     };
     
     
     /** 失败回调 */
     void (^failBlock)(NSError *) = ^(NSError *error) {
         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-        if (controller) [self hidenLoadingWithController:controller];
-        if (controller) [self showMessage:controller massage:WXMERRORMSG];
+        [self hidenLoadingWithController:controller];
+        [self showMessage:controller massage:WXMERRORMSG];
         WXMNetworkRespose *resp = [WXMNetworkRespose resposeWithTask:task response:nil error:error];
         if (failure) failure(resp);
     };
+    
     
     /** 不同的请求 */
     if (requestType == WXMHttpRequestTypePost) {
@@ -163,7 +167,11 @@
 
 /** 显示弹窗 */
 - (void)showLoadingWithController:(UIViewController *)viewController {
-    if (self.loadingType == WXMHttpLoadingTypeNone) return;
+    if (!viewController) return;
+    if (self.loadingType == WXMHttpLoadingTypeNone) {
+        [self hidenLoadingWithController:viewController];
+        return;
+    }
     
     [self wt_showLoadingWithController:viewController];
     if (self.loadingType == WXMHttpLoadingTypeMandatory) {
@@ -180,7 +188,11 @@
 
 /** 隐藏弹窗 */
 - (void)hidenLoadingWithController:(UIViewController *)viewController {
-    if (self.loadingType == WXMHttpLoadingTypeNone) return;
+    if (!viewController) return;
+    if (self.loadingType == WXMHttpLoadingTypeNone) {
+        viewController.view.userInteractionEnabled = YES;
+        return;
+    }
     
     [self wt_hiddenLoadingWithController:viewController];
     if (self.loadingType == WXMHttpLoadingTypeMandatory) {
