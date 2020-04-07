@@ -71,6 +71,7 @@ typedef NS_ENUM(NSUInteger, WXMHttpLoadingType) {
           viewController:(nullable UIViewController *)controller
                  success:(nullable void (^)(WXMNetworkRespose *respose))success
                  failure:(nullable void (^)(WXMNetworkRespose *respose))failure;
+
 @end
 
 NS_ASSUME_NONNULL_END

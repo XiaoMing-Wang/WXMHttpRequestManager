@@ -12,22 +12,21 @@
 #import <Foundation/Foundation.h>
 
 /** 线上 */
-static NSString *const KURLStringOnline = @"";
+static NSString *const kURLStringOnline = @"";
 
 /** 测试 */
-static NSString *const KURLStringTest = @"";
+static NSString *const kURLStringTest = @"";
 
 /** 开发 */
-static NSString *const KURLStringDevelopment = @"";
+static NSString *const kURLStringDevelopment = @"";
 
 
 /** 开发环境 */
 static inline NSURL *WXMCurrentEnvironment(void) {
-    return [NSURL URLWithString:KURLStringOnline];
-    /** return [NSURL URLWithString:KURLStringTest]; */
-    /** return [NSURL URLWithString:KURLStringDevelopment]; */
+    return [NSURL URLWithString:kURLStringOnline];
+    /** return [NSURL URLWithString:kURLStringTest]; */
+    /** return [NSURL URLWithString:kURLStringDevelopment]; */
 }
-
 
 /** 默认Manager */
 static inline AFHTTPSessionManager *WXMDefaultManager() {
@@ -64,15 +63,27 @@ static inline AFHTTPSessionManager *WXMDefaultManager() {
 - (void)wt_showMsgWithController:(UIViewController *)controller msgl:(NSString *)msg;
 
 /** 判断请求是否成功 状态码是否是0 */
+/** 判断请求是否成功 状态码是否是0 */
+/** 判断请求是否成功 状态码是否是0 */
 - (BOOL)wt_judgeRequestSuccess:(NSDictionary *)responseObj;
 
-/** 返回结果的目标key */
+/** 返回结果的目标key 例如数据可能存在data字段或者results字段里 */
+/** 返回结果的目标key 例如数据可能存在data字段或者results字段里 */
+/** 返回结果的目标key 例如数据可能存在data字段或者results字段里 */
 - (NSString *)wt_resultSetTarget;
 
+/** 处理异常情况 BOOL代表是否允许block继续回调 */
+/** 处理异常情况 BOOL代表是否允许block继续回调 */
 /** 处理异常情况 BOOL代表是否允许block继续回调 */
 - (BOOL)wt_judgeErrorCodeWithPath:(NSString *)path
                            result:(NSDictionary *)result
                        controller:(UIViewController *)controller;
+
+/** 判断是断网时是否提示失败 */
+/** 判断是断网时是否提示失败 */
+/** 判断是断网时是否提示失败 */
+- (BOOL)wt_judgeNetworkErrorWithPath:(NSString *)path controller:(UIViewController *)controller;
+
 @end
 
 #endif /* WXMHttpConfigurationFile_h */

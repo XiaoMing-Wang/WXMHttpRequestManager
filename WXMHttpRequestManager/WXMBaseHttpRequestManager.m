@@ -86,6 +86,8 @@ static AFHTTPSessionManager *_manager;
 }
 
 #pragma mark _________________________________________________________ 下载
+#pragma mark _________________________________________________________ 下载
+#pragma mark _________________________________________________________ 下载
 
 + (__kindof NSURLSessionTask *)downloadWithURL:(NSString *)URL
                                        fileDir:(NSString *)fileDir
@@ -102,9 +104,11 @@ static AFHTTPSessionManager *_manager;
     } destination:^NSURL *_Nonnull(NSURL *_Nonnull targetPath, NSURLResponse *_Nonnull response) {
         
         NSString *path = [KLibraryboxPath stringByAppendingPathComponent:fileDir ?: @"Download"];
-        NSFileManager *fmg = [NSFileManager defaultManager];
-        [fmg createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+        
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        [fileManager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
         NSString *filePath = [path stringByAppendingPathComponent:response.suggestedFilename];
+        
         return [NSURL fileURLWithPath:filePath];
         
     } completionHandler:^(NSURLResponse * response, NSURL *filePath, NSError *error) {

@@ -110,7 +110,7 @@
     [self showLoadingWithController:controller];
     
 #if DEBUG
-    NSLog(@"--------------> %@", path);
+    NSLog(@"-------------->请求接口: %@", path);
 #endif
     
     /** 设置请求头 */
@@ -118,29 +118,38 @@
     
     /** 加密数据 */
     NSDictionary *encry = [self configurationParameters:parameters requestPath:path];
-    
-    
+        
     /** 成功回调 */
     NSURLSessionTask *task;
     void (^successBlock)(id) = ^(id response) {
         
 #if DEBUG
-        NSLog(@"%@ --------> \n  %@",path,response);
+        NSLog(@"%@ -------->接口返回: \n  %@", path, response);
 #endif
         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
         [self hidenLoadingWithController:controller];
         
         /** 解密数据 */
-        NSDictionary * decrypResponse = [self decryptionResponse:response requestPath:path];
+        NSDictionary *decrypResponse = [self decryptionResponse:response requestPath:path];
+        
+        /** 判断请求是否成功 */
         BOOL successSign = [self wt_judgeRequestSuccess:decrypResponse];
+        
+        /** 获取目标key */
         NSString *targetString = [self wt_resultSetTarget];
-        NSDictionary * result = [decrypResponse objectForKey:targetString];
+        
+        /** 获取返回的具体参数值 */
+        NSDictionary *result = [decrypResponse objectForKey:targetString];
+        
+        /** 生成Resposeh返回 */
         WXMNetworkRespose *res = [WXMNetworkRespose resposeWithTask:task response:result error:nil];
         [res setSuccessfulWithDelivery:successSign];
         
         if (successSign) {
             if (success) success(res);
         } else {
+            
+            /** fee判断是否调用block */
             BOOL fee = [self wt_judgeErrorCodeWithPath:path result:result controller:controller];
             if (success && fee) success(res);
         }
@@ -151,7 +160,10 @@
     void (^failBlock)(NSError *) = ^(NSError *error) {
         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
         [self hidenLoadingWithController:controller];
-        [self showMessage:controller massage:WXMERRORMSG];
+        
+        BOOL fee = [self wt_judgeNetworkErrorWithPath:path controller:controller];
+        if (fee) [self showMessage:controller massage:WXMERRORMSG];
+        
         WXMNetworkRespose *resp = [WXMNetworkRespose resposeWithTask:task response:nil error:error];
         if (failure) failure(resp);
     };
@@ -159,8 +171,11 @@
     
     /** 不同的请求 */
     if (requestType == WXMHttpRequestTypePost) {
+        
         task = [self.class POST:path parameters:encry success:successBlock failure:failBlock];
+        
     } else if (requestType == WXMHttpRequestTypeGet) {
+        
         task = [self.class GET:path parameters:encry  success:successBlock failure:failBlock];
     }
 }
@@ -175,14 +190,18 @@
     
     [self wt_showLoadingWithController:viewController];
     if (self.loadingType == WXMHttpLoadingTypeMandatory) {
+        
         viewController.view.userInteractionEnabled = NO;
+        
     } else if (self.loadingType == WXMHttpLoadingTypeProhibit) {
+        
         viewController.view.userInteractionEnabled = NO;
         if (!viewController.navigationController) return;
         BOOL inter = viewController.navigationController.interactivePopGestureRecognizer.enabled;
         NSInteger hash = viewController.hash;
         [self.gestureDictionary setObject:@(inter) forKey:@(hash)];
         viewController.navigationController.interactivePopGestureRecognizer.enabled = NO;
+        
     }
 }
 
@@ -196,8 +215,11 @@
     
     [self wt_hiddenLoadingWithController:viewController];
     if (self.loadingType == WXMHttpLoadingTypeMandatory) {
+        
         viewController.view.userInteractionEnabled = YES;
+        
     } else if (self.loadingType == WXMHttpLoadingTypeProhibit) {
+        
         viewController.view.userInteractionEnabled = YES;
         if (!viewController.navigationController) return;
         NSInteger hash = viewController.hash;
@@ -205,11 +227,13 @@
             BOOL inter = [[self.gestureDictionary objectForKey:@(hash)] boolValue];
             viewController.navigationController.interactivePopGestureRecognizer.enabled = inter;
         }
+        
     }
 }
 
 /** 显示massage */
 - (void)showMessage:(UIViewController *)controller massage:(NSString *)msg {
+    controller.view.userInteractionEnabled = YES;
     [self wt_showMsgWithController:controller msgl:msg];
 }
 

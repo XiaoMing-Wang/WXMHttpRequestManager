@@ -14,9 +14,7 @@
 @property (nonatomic, strong) id response;
 @property (nonatomic, strong) NSError *error;
 
-+ (instancetype)resposeWithTask:(NSURLSessionTask *)dataTask
-                       response:(id)response
-                          error:(NSError *)error;
++ (instancetype)resposeWithTask:(NSURLSessionTask *)dataTask response:(id)response error:(NSError *)error;
 
 /** 设置 */
 - (void)setSuccessfulWithDelivery:(BOOL)delivery;
