@@ -122,7 +122,9 @@
         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
         if (controller) [self hidenLoadingWithController:controller];
         if (controller) [self showMessage:controller massage:WXMERRORMSG];
-        WXMNetworkRespose *resp = [WXMNetworkRespose resposeWithTask:task response:nil error:error];
+        WXMNetworkRespose *resp = [WXMNetworkRespose resposeWithTask:task
+                                                            response:nil
+                                                               error:error];
         if (failure) failure(resp);
     }];
 }

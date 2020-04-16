@@ -12,27 +12,27 @@
 #import <Foundation/Foundation.h>
 
 /** 线上 */
-static NSString *const KURLStringOnline = @"";
+static NSString *const kURLStringOnline = @"";
 
 /** 测试 */
-static NSString *const KURLStringTest = @"";
+static NSString *const kURLStringTest = @"";
 
 /** 开发 */
-static NSString *const KURLStringDevelopment = @"";
+static NSString *const kURLStringDevelopment = @"";
 
 /** 开发环境 */
-static inline NSURL *WXMCurrentEnvironment(void) {
-    return [NSURL URLWithString:KURLStringOnline];
+static inline NSURL *kCurrentEnvironment(void) {
+    return [NSURL URLWithString:kURLStringOnline];
     /** return [NSURL URLWithString:KURLStringTest]; */
     /** return [NSURL URLWithString:KURLStringDevelopment]; */
 }
 
 /** 默认Manager */
-static inline AFHTTPSessionManager *WXMDefaultManager(void) {
-    NSURL * baseUrl = WXMCurrentEnvironment();
-    NSURLSessionConfiguration *conf = [NSURLSessionConfiguration defaultSessionConfiguration];
+static inline AFHTTPSessionManager *kDefaultManager(void) {
+    NSURL * baseUrl = kCurrentEnvironment();
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     AFHTTPSessionManager *manager = [[AFHTTPSessionManager alloc] initWithBaseURL:baseUrl
-                                                             sessionConfiguration:conf];
+                                                             sessionConfiguration:configuration];
     manager.operationQueue.maxConcurrentOperationCount = 10;
     manager.requestSerializer = [AFHTTPRequestSerializer serializer];
     manager.responseSerializer = [AFHTTPResponseSerializer serializer];

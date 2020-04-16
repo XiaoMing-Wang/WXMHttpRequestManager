@@ -14,7 +14,6 @@ NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES).f
 /** 是否有网 */
 static BOOL _isNetwork;
 static AFHTTPSessionManager *_manager;
-
 @implementation WXMBaseHttpRequestManager
 
 /* get */
@@ -28,7 +27,7 @@ static AFHTTPSessionManager *_manager;
         
         if (success) success([self jsonObjectWithData:resp]);
         
-    } failure:^(NSURLSessionDataTask *task, NSError * error) { if(failure) failure(error);}];
+    } failure:^(NSURLSessionDataTask *task, NSError * error) { if (failure) failure(error);}];
 }
 
 /* post */
@@ -69,18 +68,23 @@ static AFHTTPSessionManager *_manager;
         NSString *mimeT = [NSString stringWithFormat:@"image/%@", mimeType ?: @"jpeg"];
         NSString *mimeF = mimeType ?: @"jpeg";
         [images enumerateObjectsUsingBlock:^(UIImage *image, NSUInteger idx, BOOL *stop) {
-            NSString *fileN = [NSString stringWithFormat:@"%@%ld.%@", fileName, idx,mimeF];
+            NSString *files = [NSString stringWithFormat:@"%@%zd.%@", fileName, idx,mimeF];
             NSData *imageData = UIImageJPEGRepresentation(image, 0.5);
             [formData appendPartWithFileData:imageData
                                         name:name
-                                    fileName:fileN
+                                    fileName:files
                                     mimeType:mimeT];
         }];
     } progress:^(NSProgress *_Nonnull uploadProgress) {
+        
         if (progress) progress(uploadProgress);
+        
     } success:^(NSURLSessionDataTask *_Nonnull task, id _Nullable responseObject) {
+        
         if (success) success(responseObject);
+        
     } failure:^(NSURLSessionDataTask *_Nullable task, NSError *_Nonnull error) {
+        
         if (failure) failure(error);
     }];
 }
@@ -92,24 +96,27 @@ static AFHTTPSessionManager *_manager;
                                        success:(void (^)(NSString *filePath))success
                                        failure:(void (^)(NSError *error))failure {
 
+    NSURLSessionDownloadTask *task = nil;
     AFHTTPSessionManager *manager = [self shareAFHTTPSessionManager];
     NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:URL]];
-    NSURLSessionDownloadTask *task = nil;
     task = [manager downloadTaskWithRequest:request progress:^(NSProgress *pro) {
         
         if (progress) progress(pro);
         
-    } destination:^NSURL *_Nonnull(NSURL *_Nonnull targetPath, NSURLResponse *_Nonnull response) {
+    } destination:^NSURL *_Nonnull(NSURL *targetPath, NSURLResponse *response) {
         
         NSString *path = [KLibraryboxPath stringByAppendingPathComponent:fileDir ?: @"Download"];
-        NSFileManager *fmg = [NSFileManager defaultManager];
-        [fmg createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
+        [[NSFileManager defaultManager] createDirectoryAtPath:path
+                                  withIntermediateDirectories:YES
+                                                   attributes:nil
+                                                        error:nil];
+        
         NSString *filePath = [path stringByAppendingPathComponent:response.suggestedFilename];
         return [NSURL fileURLWithPath:filePath];
         
     } completionHandler:^(NSURLResponse * response, NSURL *filePath, NSError *error) {
         if (success) success(filePath.absoluteString);
-        if (failure && !error) failure(error);
+        if (failure && !error) failure (error);
     }];
     
     [task resume];
@@ -121,7 +128,7 @@ static AFHTTPSessionManager *_manager;
 + (AFHTTPSessionManager *)shareAFHTTPSessionManager {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        _manager = WXMDefaultManager();
+        _manager = kDefaultManager();
     });
     return _manager;
 }
