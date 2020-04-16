@@ -153,7 +153,7 @@
             
             NSString *errorCodeString = [self wt_resultSetErrorCode];
             NSInteger errorCodeInt = errorCodeString.integerValue;
-            [respose setErrorCode:errorCodeInt];
+            [respose setErrorCodeWithCode:errorCodeInt];
             
             /** operate判断是否调用block */
             /** operate判断是否调用block */
@@ -176,7 +176,7 @@
         if (operate) [self showMessage:controller massage:WXMERRORMSG];
         
         WXMNetworkRespose *respose = [WXMNetworkRespose resposeWithTask:task response:nil error:error];
-        [respose setErrorCode:-1];
+        [respose setErrorCodeWithCode:404];
         if (failure) failure(respose);
     };
     

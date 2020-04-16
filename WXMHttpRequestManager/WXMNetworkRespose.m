@@ -22,7 +22,7 @@
     _task = task;
 }
 
-- (void)setErrorCode:(NSInteger)errorCode {
+- (void)setErrorCodeWithCode:(NSInteger)errorCode {
     _errorCode = errorCode;
 }
 
