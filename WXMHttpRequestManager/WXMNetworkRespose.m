@@ -10,9 +10,7 @@
 
 @implementation WXMNetworkRespose
 
-+ (instancetype)resposeWithTask:(NSURLSessionTask *)dataTask
-                       response:(id)response
-                          error:(NSError *)error {
++ (instancetype)resposeWithTask:(NSURLSessionTask *)dataTask response:(id)response error:(NSError *)error {
     WXMNetworkRespose *respose = [WXMNetworkRespose new];
     respose.task = dataTask;
     respose.response= response;
@@ -24,8 +22,13 @@
     _task = task;
 }
 
+- (void)setErrorCode:(NSInteger)errorCode {
+    _errorCode = errorCode;
+}
+
 - (void)setSuccessfulWithDelivery:(BOOL)delivery {
     _successful = delivery;
 }
+
 @end
 

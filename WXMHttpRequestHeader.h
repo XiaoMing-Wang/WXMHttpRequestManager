@@ -13,5 +13,6 @@
 #import "WXMNetworkRespose.h"
 #import "WXMWrapHttpRequestManager.h"
 #import "WXMHttpConfigurationFile.h"
+#import "WXMBaseHttpRequestManager.h"
 
 #endif /* WXMHttpRequestHeader_h */

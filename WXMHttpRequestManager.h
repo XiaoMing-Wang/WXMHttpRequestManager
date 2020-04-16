@@ -5,7 +5,7 @@
 //  Created by edz on 2019/6/24.
 //  Copyright © 2019 wq. All rights reserved.
 //
-
+#import "WXMHttpConfigurationFile.h"
 #import "WXMWrapHttpRequestManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
