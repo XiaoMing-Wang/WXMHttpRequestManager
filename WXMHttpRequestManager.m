@@ -15,7 +15,6 @@
 }
 
 - (void)wt_showMsgWithController:(nonnull UIViewController *)controller msgl:(nonnull NSString *)msg {
-    if (msg.length <= 0) return;
     
 }
 
@@ -28,11 +27,6 @@
     return YES;
 }
 
-/** 返回结果的目标key 例如数据可能存在data字段或者results字段里 */
-- (nonnull NSString *)wt_resultSetTarget {
-    return @"";
-}
-
 /** errorCode和errorMessage字段 */
 - (NSString *)wt_resultSetErrorCode {
     return @"errorCode";
@@ -40,6 +34,11 @@
 
 - (NSString *)wt_resultSetErrorMessage {
     return @"errorMsg";
+}
+
+/** 返回结果的目标key 例如数据可能存在data字段或者results字段里 */
+- (nonnull NSString *)wt_resultSetTarget {
+    return @"data";
 }
 
 /** 判断是状态码不为0是否显示toast */
@@ -50,9 +49,8 @@
 }
 
 /** 判断是断网时是否显示toast */
-- (BOOL)wt_judgeNetworkErrorWithPath:(NSString *)path controller:(UIViewController *)controller {
+- (BOOL)wt_judgeNetworkErrorWithPath:(nonnull NSString *)path controller:(nonnull UIViewController *)controller {
     return YES;
 }
-
 
 @end

@@ -11,6 +11,8 @@
 #import <AFNetworking.h>
 #import <Foundation/Foundation.h>
 
+NS_ASSUME_NONNULL_BEGIN
+
 /** 线上 */
 static NSString *const kURLStringOnline = @"";
 
@@ -81,8 +83,10 @@ static inline AFHTTPSessionManager *kDefaultManager(void) {
 /** 判断是断网时是否提示失败 */
 /** 判断是断网时是否提示失败 */
 /** 判断是断网时是否提示失败 */
-- (BOOL)wt_judgeNetworkErrorWithPath:(NSString *)path controller:(UIViewController *)controller;
+- (BOOL)wt_judgeNetworkErrorWithPath:(nonnull NSString *)path controller:(nonnull UIViewController *)controller;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 #endif /* WXMHttpConfigurationFile_h */

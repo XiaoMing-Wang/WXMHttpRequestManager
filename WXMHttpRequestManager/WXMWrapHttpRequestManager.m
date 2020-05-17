@@ -168,8 +168,8 @@
             /** 判断状态码不等于0时是否显示toast(子类实现) */
             /** 判断状态码不等于0时是否显示toast(子类实现) */
             /** 判断状态码不等于0时是否显示toast(子类实现) */
-            BOOL disToast = [self wt_judgeErrorMessageWithPath:path result:result controller:controller];
-            if (disToast) [self showMessage:controller massage:errorMessageValue];
+            BOOL displayToast = [self wt_judgeErrorMessageWithPath:path result:result controller:controller];
+            if (displayToast) [self showMessage:controller massage:errorMessageValue];
         }
     };
     
