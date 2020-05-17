@@ -42,13 +42,6 @@
     return @"errorMsg";
 }
 
-/** 处理异常情况 BOOL代表是否允许block继续回调 */
-- (BOOL)wt_judgeErrorCodeWithPath:(nonnull NSString *)path
-                           result:(nonnull NSDictionary *)result
-                       controller:(nonnull UIViewController *)controller {
-    return YES;
-}
-
 /** 判断是状态码不为0是否显示toast */
 - (BOOL)wt_judgeErrorMessageWithPath:(nonnull NSString *)path
                               result:(nonnull NSDictionary *)result

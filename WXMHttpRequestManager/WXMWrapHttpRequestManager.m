@@ -163,18 +163,13 @@
             NSString *errorMessageValue = [decrypResponse objectForKey:errorMessageKey ?: @""];
             [respose setErrorCodeWithCode:errorCodeValue.integerValue];
             [respose setErrorMsg:errorMessageValue];
+            if (failure) failure(respose);
             
             /** 判断状态码不等于0时是否显示toast(子类实现) */
             /** 判断状态码不等于0时是否显示toast(子类实现) */
             /** 判断状态码不等于0时是否显示toast(子类实现) */
             BOOL disToast = [self wt_judgeErrorMessageWithPath:path result:result controller:controller];
             if (disToast) [self showMessage:controller massage:errorMessageValue];
-            
-            /** operate表示判断是否回调block(子类实现) */
-            /** operate表示判断是否回调block(子类实现) */
-            /** operate表示判断是否回调block(子类实现) */
-            BOOL operate = [self wt_judgeErrorCodeWithPath:path result:result controller:controller];
-            if (failure && operate) failure(respose);
         }
     };
     
@@ -184,15 +179,15 @@
         [self hidenLoadingWithController:controller];
         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
         
+        WXMNetworkRespose *respose = [WXMNetworkRespose resposeWithTask:task response:nil error:error];
+        [respose setErrorCodeWithCode:404];
+        if (failure) failure(respose);
+        
         /** operate判断是否提示网络错误(子类实现) */
         /** operate判断是否提示网络错误(子类实现) */
         /** operate判断是否提示网络错误(子类实现) */
         BOOL operate = [self wt_judgeNetworkErrorWithPath:path controller:controller];
         if (operate) [self showMessage:controller massage:WXMERRORMSG];
-        
-        WXMNetworkRespose *respose = [WXMNetworkRespose resposeWithTask:task response:nil error:error];
-        [respose setErrorCodeWithCode:404];
-        if (failure) failure(respose);
     };
     
     

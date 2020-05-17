@@ -71,13 +71,6 @@ static inline AFHTTPSessionManager *kDefaultManager(void) {
 - (NSString *)wt_resultSetErrorMessage;
 - (NSString *)wt_resultSetTarget;
 
-/** 处理异常情况 BOOL代表是否允许block继续回调 */
-/** 处理异常情况 BOOL代表是否允许block继续回调 */
-/** 处理异常情况 BOOL代表是否允许block继续回调 */
-- (BOOL)wt_judgeErrorCodeWithPath:(NSString *)path
-                           result:(NSDictionary *)result
-                       controller:(UIViewController *)controller;
-
 /** 判断是状态码不为0是否显示toast */
 /** 判断是状态码不为0是否显示toast */
 /** 判断是状态码不为0是否显示toast */
