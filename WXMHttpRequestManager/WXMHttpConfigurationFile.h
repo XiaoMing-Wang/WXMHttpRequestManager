@@ -66,14 +66,10 @@ static inline AFHTTPSessionManager *kDefaultManager(void) {
 /** 判断请求是否成功 例如状态码是否是0 */
 - (BOOL)wt_judgeRequestSuccess:(NSDictionary *)responseObj;
 
-/** 返回结果的目标key 例如数据可能存在data字段或者results字段里 */
-/** 返回结果的目标key 例如数据可能存在data字段或者results字段里 */
-/** 返回结果的目标key 例如数据可能存在data字段或者results字段里 */
-- (NSString *)wt_resultSetTarget;
-
-/** errorCode和errorMessage字段 */
+/** errorCode 和 errorMessage 和 data 字段 */
 - (NSString *)wt_resultSetErrorCode;
 - (NSString *)wt_resultSetErrorMessage;
+- (NSString *)wt_resultSetTarget;
 
 /** 处理异常情况 BOOL代表是否允许block继续回调 */
 /** 处理异常情况 BOOL代表是否允许block继续回调 */

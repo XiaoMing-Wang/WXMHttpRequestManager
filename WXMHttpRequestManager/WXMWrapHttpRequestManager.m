@@ -154,11 +154,13 @@
         } else {
             
             /** 设置状态码(子类实现) */
+            /** 设置状态码(子类实现) */
+            /** 设置状态码(子类实现) */
             NSString *errorCodeKey = [self wt_resultSetErrorCode];
             NSString *errorMessageKey = [self wt_resultSetErrorMessage];
             
-            NSString *errorCodeValue = [result objectForKey:errorCodeKey ?: @""];
-            NSString *errorMessageValue = [result objectForKey:errorMessageKey ?: @""];
+            NSString *errorCodeValue = [decrypResponse objectForKey:errorCodeKey ?: @""];
+            NSString *errorMessageValue = [decrypResponse objectForKey:errorMessageKey ?: @""];
             [respose setErrorCodeWithCode:errorCodeValue.integerValue];
             [respose setErrorMsg:errorMessageValue];
             
