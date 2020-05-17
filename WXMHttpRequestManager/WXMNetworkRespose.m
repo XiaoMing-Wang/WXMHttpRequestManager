@@ -13,7 +13,7 @@
 + (instancetype)resposeWithTask:(NSURLSessionTask *)dataTask response:(id)response error:(NSError *)error {
     WXMNetworkRespose *respose = [WXMNetworkRespose new];
     respose.task = dataTask;
-    respose.response= response;
+    respose.response = response;
     respose.error = error;
     return response;
 }
@@ -24,6 +24,10 @@
 
 - (void)setErrorCodeWithCode:(NSInteger)errorCode {
     _errorCode = errorCode;
+}
+
+- (void)setErrorMsg:(NSString *)errorMsg {
+    _errorMsg = errorMsg;
 }
 
 - (void)setSuccessfulWithDelivery:(BOOL)delivery {

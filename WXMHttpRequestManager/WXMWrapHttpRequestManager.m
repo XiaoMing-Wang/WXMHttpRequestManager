@@ -132,10 +132,10 @@
         /** 解密数据 */
         NSDictionary *decrypResponse = [self decryptionResponse:response requestPath:path];
         
-        /** 判断请求是否成功 */
+        /** 判断请求是否成功(子类实现) */
         BOOL successSign = [self wt_judgeRequestSuccess:decrypResponse];
         
-        /** 获取目标key */
+        /** 获取目标key 如data放在data字段里(子类实现) */
         NSString *targetString = [self wt_resultSetTarget];
         
         /** 获取返回的具体参数值 */
@@ -147,17 +147,30 @@
         
         if (successSign) {
             
+            /** 状态码 = 0 */
+            [respose setErrorCodeWithCode:0];
             if (success) success(respose);
             
         } else {
             
-            NSString *errorCodeString = [self wt_resultSetErrorCode];
-            NSInteger errorCodeInt = errorCodeString.integerValue;
-            [respose setErrorCodeWithCode:errorCodeInt];
+            /** 设置状态码(子类实现) */
+            NSString *errorCodeKey = [self wt_resultSetErrorCode];
+            NSString *errorMessageKey = [self wt_resultSetErrorMessage];
             
-            /** operate判断是否调用block */
-            /** operate判断是否调用block */
-            /** operate判断是否调用block */
+            NSString *errorCodeValue = [result objectForKey:errorCodeKey ?: @""];
+            NSString *errorMessageValue = [result objectForKey:errorMessageKey ?: @""];
+            [respose setErrorCodeWithCode:errorCodeValue.integerValue];
+            [respose setErrorMsg:errorMessageValue];
+            
+            /** 判断状态码不等于0时是否显示toast(子类实现) */
+            /** 判断状态码不等于0时是否显示toast(子类实现) */
+            /** 判断状态码不等于0时是否显示toast(子类实现) */
+            BOOL disToast = [self wt_judgeErrorMessageWithPath:path result:result controller:controller];
+            if (disToast) [self showMessage:controller massage:errorMessageValue];
+            
+            /** operate表示判断是否回调block(子类实现) */
+            /** operate表示判断是否回调block(子类实现) */
+            /** operate表示判断是否回调block(子类实现) */
             BOOL operate = [self wt_judgeErrorCodeWithPath:path result:result controller:controller];
             if (failure && operate) failure(respose);
         }
@@ -169,9 +182,9 @@
         [self hidenLoadingWithController:controller];
         [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
         
-        /** operate判断是否提示网络错误 */
-        /** operate判断是否提示网络错误 */
-        /** operate判断是否提示网络错误 */
+        /** operate判断是否提示网络错误(子类实现) */
+        /** operate判断是否提示网络错误(子类实现) */
+        /** operate判断是否提示网络错误(子类实现) */
         BOOL operate = [self wt_judgeNetworkErrorWithPath:path controller:controller];
         if (operate) [self showMessage:controller massage:WXMERRORMSG];
         
@@ -200,7 +213,9 @@
         return;
     }
     
+    /** 显示loading */
     [self wt_showLoadingWithController:viewController];
+    
     if (self.loadingType == WXMHttpLoadingTypeMandatory) {
         
         viewController.view.userInteractionEnabled = NO;
@@ -213,33 +228,22 @@
         NSInteger hash = viewController.hash;
         [self.gestureDictionary setObject:@(inter) forKey:@(hash)];
         viewController.navigationController.interactivePopGestureRecognizer.enabled = NO;
-        
     }
 }
 
 /** 隐藏弹窗 */
 - (void)hidenLoadingWithController:(UIViewController *)viewController {
     if (!viewController) return;
-    if (self.loadingType == WXMHttpLoadingTypeNone) {
-        viewController.view.userInteractionEnabled = YES;
-        return;
-    }
-    
+    viewController.view.userInteractionEnabled = YES;
     [self wt_hiddenLoadingWithController:viewController];
-    if (self.loadingType == WXMHttpLoadingTypeMandatory) {
-        
-        viewController.view.userInteractionEnabled = YES;
-        
-    } else if (self.loadingType == WXMHttpLoadingTypeProhibit) {
-        
-        viewController.view.userInteractionEnabled = YES;
+    
+    if (self.loadingType == WXMHttpLoadingTypeProhibit) {
         if (!viewController.navigationController) return;
         NSInteger hash = viewController.hash;
         if ([self.gestureDictionary.allKeys containsObject:@(hash)]) {
             BOOL inter = [[self.gestureDictionary objectForKey:@(hash)] boolValue];
             viewController.navigationController.interactivePopGestureRecognizer.enabled = inter;
         }
-        
     }
 }
 

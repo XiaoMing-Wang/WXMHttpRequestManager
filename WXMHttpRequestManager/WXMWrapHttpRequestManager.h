@@ -40,33 +40,47 @@ typedef NS_ENUM(NSUInteger, WXMHttpLoadingType) {
 /** 属性 */
 @property (nonatomic, assign) WXMHttpLoadingType loadingType;
 
-/** 获取对象 WXMWrapHttpRequestManager不是单例 持有的AFHTTPSessionManager才是单例 */
+/** 没有弹窗 */
 + (__kindof WXMWrapHttpRequestManager *)shareNone;
+
+/** 有弹窗可操作 */
 + (__kindof WXMWrapHttpRequestManager *)shareDisplay;
+
+/** 有弹窗不可操作 */
 + (__kindof WXMWrapHttpRequestManager *)shareMandatory;
+
+/** 有弹窗不可操作(手势也关闭) */
 + (__kindof WXMWrapHttpRequestManager *)shareProhibit;
 
-/** 设置响应头 */
+/** 设置响应头 子类实现 */
 - (void)configurationNetworkHeader:(NSString *)path;
 
 
-/** 参数加密 */
+/** 参数加密 子类实现 */
 - (NSDictionary *)configurationParameters:(NSDictionary *)parameters requestPath:(NSString *)path;
 
 
-/** 响应解密 */
+/** 响应解密 子类实现 */
 - (NSDictionary *)decryptionResponse:(NSDictionary *)parameters requestPath:(NSString *)path;
 
-
-/** post 直接使用 */
+/// post 直接使用
+/// @param path 请求路径
+/// @param parameters 参数
+/// @param controller 显示toast的控制器
+/// @param success 成功回调(表示网络请求成功 不代表状态码为0)
+/// @param failure 断网 失败 404
 - (void)requestWithPath:(NSString *)path
              parameters:(nullable NSDictionary *)parameters
          viewController:(nullable UIViewController *)controller
                 success:(nullable void (^)(WXMNetworkRespose *respose))success
                 failure:(nullable void (^)(WXMNetworkRespose *respose))failure;
 
-
-/** get 直接使用 */
+/// get 直接使用
+/// @param path 请求路径
+/// @param parameters 参数
+/// @param controller 显示toast的控制器
+/// @param success 成功回调(表示网络请求成功 不代表状态码为0)
+/// @param failure 断网 失败 404
 - (void)pullDataWithPath:(NSString *)path
               parameters:(nullable NSDictionary *)parameters
           viewController:(nullable UIViewController *)controller

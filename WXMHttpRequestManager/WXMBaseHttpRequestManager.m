@@ -27,7 +27,7 @@ static AFHTTPSessionManager *_manager;
         
         if (success) success([self jsonObjectWithData:resp]);
         
-    } failure:^(NSURLSessionDataTask *task, NSError * error) { if (failure) failure(error);}];
+    } failure:^(NSURLSessionDataTask *task, NSError * error) { if (failure) failure(error); }];
 }
 
 /* post */
@@ -35,6 +35,7 @@ static AFHTTPSessionManager *_manager;
                          parameters:(NSDictionary *)parameters
                             success:(void(^)(id responseObject))success
                             failure:(void(^)(NSError *error))failure {
+    
     AFHTTPSessionManager *manager = [self shareAFHTTPSessionManager];
     return [manager POST:URL parameters:parameters progress:nil success:^(STask *task, id resp) {
         
